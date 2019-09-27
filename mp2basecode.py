@@ -156,7 +156,7 @@ class GenGameBoard:
 
 # Print out the header info
 print("CLASS: Artificial Intelligence, Lewis University")
-print("NAME: [put your name here]")
+print("NAME: Scott Carrington")
 
 LOST = 0
 WON = 1
