@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Jan 18 14:30:21 2019
-
-@author: szczurpi
-
-Machine Problem 2
-Gen-Tic-Tac-Toe Minimax Search with alpha/beta pruning
-"""
 
 import numpy as np
 import random
@@ -138,23 +128,84 @@ class GenGameBoard:
     def noMoreMoves(self):
         return (self.marks!=' ').all()
 
-    
-    # TODO - this method should run minimax to determine the value of each move
-    # Then make best move for the computer by placing the mark in the best spot
+
     def makeCompMove(self):
-        # This code chooses a random computer move - just for testing purposes
-        # REMOVE THIS AFTER IMPLEMENTING AI
-        # Make sure the move was possible, if not try again
-        row, col = -1, -1
-        while not self.makeMove(row, col, 'O'):
-            col = random.randint(1,boardSize)
-            row = random.randint(1,boardSize)
-        print("Computer chose: "+str(row)+","+str(col))
+        maxx, maxy = -1, -1
+        (m, x, y) = self.max_alpha_beta(-2,2)
+        # print("x equals " + str(px)) Debugging purposes only
+        # print("y equals " + str(py)) Debugging purposes only
+        self.makeMove(x+1,y+1,'O') # Make move, add 1 to each variable for array purposes
+        print("Computer chose: "+str(x+1)+","+str(y+1)) # Print result, adjusting for array again
         
         # Run alpha beta search here
-        
 
-# Print out the header info
+    def max_alpha_beta(self, alpha, beta): # Optimal/Max score for AI
+        maxalpha = -2 # Worst case alpha for AI
+        maxx = None
+        maxy = None
+
+        # Establish whether or not the game is still in play for algorithm
+        if board.checkWin('X'): #Check to see if AI lost
+            return (-1, 0, 0)
+        elif board.checkWin('O'): # Check to see if AI won
+            return (1, 0, 0)
+        elif board.noMoreMoves(): # Check to see if draw
+            return (0, 0, 0)
+
+        for s in range(0, self.boardSize-1):
+            for t in range(0, self.boardSize-1):
+                if self.marks[s][t] == ' ':
+                    self.marks[s][t] = 'O' #Attempt first open slot and check max
+                    (m, max_s, max_t) = self.min_alpha_beta(alpha, beta)
+                    if m > maxalpha:
+                        maxalpha = m
+                        maxx = s
+                        maxy = t
+                    self.marks[s][t] = ' ' # reset the mark
+
+                    ## Alpha Beta Pruning
+                    if maxalpha >= beta:
+                        return (maxalpha, maxx, maxy)
+
+                    if maxalpha > alpha:
+                        alpha = maxalpha
+
+        return (maxalpha, maxx, maxy)
+
+    def min_alpha_beta(self, alpha, beta): #Optimal/Max score for player
+        minalpha = 2 # Worst case for player
+        minx = None
+        miny = None
+
+        # Establish whether or not the game is still in play for algorithm
+        if board.checkWin('X'): # Check to see if AI lost
+            return (-1, 0, 0)
+        elif board.checkWin('O'): # Check to see if AI won
+            return (1, 0, 0)
+        elif board.noMoreMoves(): # check for Draw
+            return (0, 0, 0)
+
+        for s in range(0, self.boardSize-1):
+            for t in range(0, self.boardSize-1):
+                if self.marks[s][t] == ' ':
+                    self.marks[s][t] = 'X' #Attempt first open slot and check max
+                    (m, min_s, min_t) = self.max_alpha_beta(alpha, beta) #
+                    if m < minalpha:
+                        minalpha = m
+                        minx = s
+                        miny = t
+                    self.marks[s][t] = ' ' # reset the mark
+
+                    ## Alpha Beta Pruning
+                    if minalpha <= alpha:
+                        return (minalpha, minx, miny)
+
+                    if minalpha < beta:
+                        beta = minalpha
+
+        return (minalpha, minx, miny)
+
+
 print("CLASS: Artificial Intelligence, Lewis University")
 print("NAME: Scott Carrington")
 
